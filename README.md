@@ -1,111 +1,110 @@
-# Prüfung -- Mobile App zur Dokumentation elektrischer Prüfungen
+# Prüfung
 
-Android-App auf Basis von **MIT App Inventor** zur mobilen Erfassung und
-Übertragung von Prüfdaten für ortsfeste Bauteile sowie RCD-Prüfungen.
+**Mobile Android-App zur Erfassung und Übertragung von Prüfergebnissen
+für ortsfeste Bauteile und RCDs.**
 
-Die Anwendung stellt mehrere Prüfbereiche bereit, unterstützt die
-Identifikation über QR-/Barcodes und überträgt die erfassten Datensätze
-per HTTP an einen konfigurierbaren Endpunkt, beispielsweise einen
-HTTP-Trigger in Microsoft Power Automate.
+Das Projekt wurde mit **MIT App Inventor** erstellt. Die App bietet
+getrennte Eingabemasken für die ortsfeste Prüfung, die RCD-Messung und
+die RCD-Auslösung. Prüfdaten können in der App eingetragen und per HTTP
+an eine konfigurierte Schnittstelle übertragen werden.
 
-## Funktionen
+## Funktionsumfang
 
-### 1. Prüfung ortsfester Bauteile
+### Ortsfeste Prüfung
 
-Erfassung von Stammdaten und Prüfergebnissen:
+Der Startbildschirm `Screen1` enthält die Erfassung folgender Angaben:
 
--   Leitungsart, Querschnitt und Aderanzahl
--   Ort, Sicherung und Gerätenummer
--   Gerätenummer per QR-/Barcode-Scanner erfassen
--   Sichtkontrolle:
-    -   Brandschottung
-    -   Leitungsverlegung
-    -   Schutzleiteranschluss
-    -   richtiger Querschnitt
-    -   Berührungsschutz
--   Spannungsprüfung:
-    -   L1--L2, L2--L3, L1--L3
-    -   L1--N, L2--N, L3--N
-    -   N--PE
-    -   24-V-Kontrolle
--   Widerstandsmessungen:
-    -   ZS, RE, IK und PE/Gehäuse
-    -   RISO L1--PE, L2--PE und L3--PE
--   RCD-Status, Drehfeld und Funktionsprüfung
--   Datum/Uhrzeit und Prüfer
+**Stammdaten** - Leitungsart: `NYM`, `H07RN-F`, `YSLY-JZ` oder `NYY` -
+Querschnitt und Aderanzahl - Ort und Sicherung - Gerätenummer mit
+Scan-Funktion - Prüfer sowie Datum und Uhrzeit
 
-### 2. RCD-Messung
+**Sichtkontrolle** - Brandschottung - Leitungsverlegung - Anschluss
+Schutzleiter - Richtiger Querschnitt - Berührungsschutz
 
-Separater Prüfbereich mit folgenden Eingabefeldern:
+**Spannungsmessungen / Kontrollen** - L1--L2, L2--L3 und L1--L3 - L1--N,
+L2--N und L3--N - N--PE - 24-V-Kontrolle
 
--   RCD-Nummer (auch per Scan)
--   Berührungsspannung U
--   Erdungswiderstand RE
--   Auslösezeit tA
+**Widerstandsmessungen** - ZS - RE - IK - PE/Gehäuse - RISO L1--PE -
+RISO L2--PE - RISO L3--PE
+
+**Weitere Prüfergebnisse** - RCD OK - Funktion OK - Drehfeld rechts oder
+links
+
+Über die Schaltflächen kann zu den RCD-Prüfseiten gewechselt und eine
+Synchronisierung gestartet werden.
+
+### RCD-Messung
+
+Der Bildschirm `Screen3` erfasst:
+
+-   RCD-Nummer (mit Scan-Funktion)
 -   RCD-Status
--   Datum/Uhrzeit und Prüfer
-
-### 3. RCD-Auslösung
-
-Dokumentation einer RCD-Auslösung mit:
-
--   RCD-Nummer (auch per Scan)
--   Status „RCD ok"
--   Datum/Uhrzeit
+-   Berührungsspannung `U`
+-   Erdungswiderstand `RE`
+-   Auslösezeit `tA`
 -   Prüfer
+-   Datum und Uhrzeit
 
-### 4. Einstellungen
+### RCD-Auslösung
 
--   Power-Automate-URL hinterlegen
--   URL lokal speichern
--   URL löschen
--   QR-Code zur konfigurierten URL anzeigen
--   URL über den Scanner erfassen
+Der Bildschirm `Screen4` dient zur Dokumentation der RCD-Auslösung:
 
-## Technischer Aufbau
+-   RCD-Nummer (mit Scan-Funktion)
+-   RCD-Status
+-   Prüfer
+-   Datum und Uhrzeit
 
-  -----------------------------------------------------------------------
-  Bestandteil                         Verwendung
-  ----------------------------------- -----------------------------------
-  MIT App Inventor                    Entwicklung der Android-App
+### Einstellungen
 
-  TinyDB                              Lokale Speicherung von
-                                      Einstellungen und Prüfdaten
+Der Bildschirm `Screen2` bietet:
 
-  BarcodeScanner                      QR-/Barcode-Erfassung
+-   Eingabe der Power-Automate-URL
+-   Speichern und Löschen der URL
+-   QR-Code-Anzeige für die URL
+-   Einlesen einer URL per Scan
+-   Status-/Datenanzeige
 
-  Web-Komponente                      HTTP-Kommunikation
+## Datenübertragung
 
-  Clock                               Datum und Uhrzeit
+Die App verwendet die MIT-App-Inventor-Komponente **Web** für
+HTTP-Anfragen. Als Request-Header wird `Content-Type: application/json`
+gesetzt. Die Zieladresse wird über die Einstellungen bereitgestellt.
 
-  WebViewer                           Anzeige des QR-Codes
-
-  Power Automate (optional)           Annahme und Weiterverarbeitung der
-                                      Prüfdaten
-  -----------------------------------------------------------------------
-
-### Datenfluss
+Die App enthält außerdem lokale `TinyDB`-Komponenten. Die Schaltflächen
+**eintragen** und **synch** sind für die Erfassung bzw. Übertragung der
+Datensätze vorgesehen.
 
 ``` text
-Android-App
-    |
-    | Prüfdaten als JSON (HTTP POST)
-    v
-Konfigurierter HTTP-Endpunkt
-    |
-    +--> Microsoft Power Automate (optional)
-              |
-              +--> Weitere Verarbeitung / Ablage
+Android-App (MIT App Inventor)
+        |
+        | JSON / HTTP
+        v
+Konfigurierte URL
+        |
+        v
+Power Automate HTTP-Trigger
+        |
+        v
+Weiterverarbeitung und Ablage
 ```
 
-Die Ziel-URL wird in der App unter **Einstellungen** konfiguriert. Für
-die HTTP-Anfrage wird `Content-Type: application/json` gesetzt.
+Power Automate ist ein möglicher Empfänger der HTTP-Anfrage. Der
+konkrete Flow und dessen Zielsystem müssen separat eingerichtet werden.
 
-## Datenformat
+## JSON-Datensatztypen
 
-Die App unterscheidet die Datensätze über das Feld `Prüfung`.
+Die App kennzeichnet die Prüfungsart im JSON-Feld `Prüfung`:
 
-Beispielhafte Feldstruktur der ortsfesten Prüfung:
+  Prüfungsart         Kennung
+  ------------------- -------------
+  Ortsfeste Prüfung   `ortsfest`
+  RCD-Messung         `rcd`
+  RCD-Auslösung       `rcd_taste`
+
+### Beispiel: ortsfeste Prüfung
+
+Die folgenden Felder orientieren sich an den im App-Projekt
+zusammengesetzten Daten. Werte sind beispielhaft:
 
 ``` json
 {
@@ -116,19 +115,19 @@ Beispielhafte Feldstruktur der ortsfesten Prüfung:
   "Gerät": "Anlagenkennung",
   "Ort": "Halle 1",
   "Sicherung": "Feld / Sicherung",
-  "Leitungsverlegung": true,
-  "Brandschottung": true,
-  "Schutzleiter": true,
-  "Querschnitt_ok": true,
-  "Berührungsschutz": true,
-  "L1_L2": true,
-  "L2_L3": true,
-  "L1_L3": true,
-  "L1_N": true,
-  "L2_N": true,
-  "L3_N": true,
-  "N_PE": true,
-  "Kleinspg_ok": true,
+  "Leitungsverlegung": "true",
+  "Brandschottung": "true",
+  "Schutzleiter": "true",
+  "Querschnitt_ok": "true",
+  "Berührungsschutz": "true",
+  "L1_L2": "true",
+  "L2_L3": "true",
+  "L1_L3": "true",
+  "L1_N": "true",
+  "L2_N": "true",
+  "L3_N": "true",
+  "N_PE": "true",
+  "Kleinspg_ok": "true",
   "ZS": "Messwert",
   "RE": "Messwert",
   "IK": "Messwert",
@@ -136,84 +135,120 @@ Beispielhafte Feldstruktur der ortsfesten Prüfung:
   "RISO1": "Messwert",
   "RISO2": "Messwert",
   "RISO3": "Messwert",
-  "RCD_ok": true,
-  "Funktion_ok": true,
+  "RCD_ok": "true",
+  "Funktion_ok": "true",
   "Drehfeld": "Drehfeld rechts",
   "Datum": "18.11.2026 18:00:00",
   "Prüfer": "Prüfername"
 }
 ```
 
-Weitere Prüfarten verwenden diese Kennungen:
+### Beispiel: RCD-Messung
 
-  Prüfbereich                 Wert im Feld `Prüfung`
-  --------------------------- ------------------------
-  Ortsfeste Prüfung           `ortsfest`
-  RCD-Messung                 `rcd`
-  RCD-Auslösung / Prüftaste   `rcd_taste`
+``` json
+{
+  "Prüfung": "rcd",
+  "UIN": "Messwert",
+  "RE": "Messwert",
+  "tA": "Messwert",
+  "RCD_Nr": "RCD-001",
+  "RCD_ok": "true",
+  "Datum": "18.11.2026 18:00:00",
+  "Prüfer": "Prüfername"
+}
+```
 
-Die Beispielwerte dienen nur zur Veranschaulichung. Maßgeblich sind die
-tatsächlich in der App erfassten Werte und die implementierte
-Feldstruktur.
+### Beispiel: RCD-Auslösung
 
-## Projekt öffnen und bearbeiten
+``` json
+{
+  "Prüfung": "rcd_taste",
+  "RCD_Nr": "RCD-001",
+  "RCD_ok": "true",
+  "Datum": "18.11.2026 18:00:00",
+  "Prüfer": "Prüfername"
+}
+```
 
-1.  Repository herunterladen oder klonen.
-2.  MIT App Inventor öffnen: <https://ai2.appinventor.mit.edu/>
-3.  Im Menü **Projects → Import project (.aia) from my computer**
-    auswählen.
-4.  Die Projektdatei `md_pruefung.aia` importieren.
-5.  Die Power-Automate-URL unter **Einstellungen** eintragen.
+**Hinweis:** Die Checkbox-Werte werden im Projekt als Textwerte
+(`"true"` / `"false"`) in die JSON-Zeichenfolge eingefügt. Empfänger
+sollten daher nicht ungeprüft JSON-Boolean-Werte erwarten. Die
+tatsächliche Nutzlast sollte beim Einrichten des Flows mit einem
+Testlauf kontrolliert werden.
+
+## Projekt importieren
+
+1.  [MIT App Inventor](https://ai2.appinventor.mit.edu/) öffnen.
+2.  **Projects → Import project (.aia) from my computer** auswählen.
+3.  Die Datei `md_pruefung(1).aia` bzw. die im Repository abgelegte
+    `.aia`-Projektdatei auswählen.
+4.  Projekt öffnen und die Komponenten sowie Blöcke bearbeiten.
+5.  Unter **Einstellungen** die URL des HTTP-Endpunkts eintragen.
 6.  App auf einem Android-Gerät testen.
 
 ## Voraussetzungen
 
 -   MIT App Inventor
--   Android-Gerät mit Kamera für QR-/Barcode-Scans
--   Erreichbarer HTTP-Endpunkt
--   Netzwerkverbindung zum konfigurierten Endpunkt für die Übertragung
+-   Android-Gerät
+-   Kamera-Berechtigung bzw. Scanner-Unterstützung für
+    QR-/Barcode-Erfassung
+-   Netzwerkzugriff auf den konfigurierten HTTP-Endpunkt
+-   Optional: Microsoft Power Automate mit eingerichtetem HTTP-Trigger
 
-Die Projektkonfiguration verwendet Android **minSdk 24**.
+Die Projektdatei definiert `AndroidMinSdk: 24` und ein responsives
+Layout.
 
-## Repository-Struktur
+## Projektstruktur
 
 ``` text
-.
-├── md_pruefung.aia       # MIT-App-Inventor-Projekt zum Import
-├── README.md             # Diese Dokumentation
+Repository/
+├── README.md
+├── md_pruefung(1).aia
 └── assets/
     └── logo_emsland-group.png
 ```
 
-Die `.aia`-Datei ist ein ZIP-basiertes MIT-App-Inventor-Projektarchiv.
-Die interne Projektstruktur enthält die vier Screens `Screen1` bis
-`Screen4`.
+Die `.aia`-Datei ist das MIT-App-Inventor-Projektarchiv. Sie enthält die
+vier Screens, deren Designer-Oberflächen und die zugehörigen
+Programmblöcke sowie das Logo.
 
-## Hinweise und Grenzen
+## Technische Komponenten
 
--   Die App dokumentiert Eingaben und Prüfergebnisse. Sie ersetzt keine
-    fachgerechte Prüfung durch eine qualifizierte Person.
--   Die Einhaltung der jeweils geltenden Normen, Grenzwerte und
-    Prüfverfahren muss durch den Prüfverantwortlichen sichergestellt
-    werden.
--   Eine automatische fachliche Bewertung aller Messwerte oder eine
-    normbasierte Freigabe ist durch die hier dokumentierte
-    Projektstruktur nicht nachgewiesen.
--   Die lokale Speicherung über TinyDB ist Bestandteil der App. Ein
-    belastbares Offline-Synchronisations- und Wiederholungsmechanismus
-    sollte vor dem produktiven Einsatz gesondert getestet werden.
--   Die Power-Automate-URL ist eine vertrauliche Konfiguration. Sie
-    sollte nicht in öffentliche Screenshots, Quelltextbeispiele oder
-    Commits aufgenommen werden.
--   Vor einem produktiven Einsatz sind HTTP-Fehlerfälle, Berechtigungen,
-    Datenvalidierung, Dublettenvermeidung und die dauerhafte Ablage der
-    Prüfdaten zu testen.
+  Komponente       Einsatz
+  ---------------- -------------------------
+  TinyDB           Lokale Datenspeicherung
+  BarcodeScanner   QR-/Barcode-Scan
+  Web              HTTP-Anfragen
+  Clock            Datum und Uhrzeit
+  WebViewer        QR-Code-Anzeige
 
-## Version
+## Hinweise
 
--   App-Name: `md_pruefung`
--   Anzeigename: `Prüfung`
--   Version: `2026.11.18.01`
--   Versioncode: `154`
--   Android minSdk: `24`
--   Entwicklungsplattform: MIT App Inventor
+-   Die App dient der Erfassung und Dokumentation von Prüfdaten. Sie
+    ersetzt keine fachgerechte Prüfung und keine Bewertung durch eine
+    qualifizierte Elektrofachkraft.
+-   Prüfverfahren, Grenzwerte und die Beurteilung der Messwerte müssen
+    anhand der geltenden Vorschriften und der konkreten Anlage
+    festgelegt werden.
+-   Eine automatische normbasierte Bewertung der Messwerte ist aus dem
+    vorliegenden Projekt nicht ersichtlich.
+-   Vor dem produktiven Einsatz sind die HTTP-Übertragung,
+    Fehlerbehandlung, lokale Speicherung, Synchronisierung und das
+    Verhalten bei fehlender Netzwerkverbindung praktisch zu testen.
+-   Die Power-Automate-URL kann Zugriff ermöglichen. Behandle sie daher
+    vertraulich und veröffentliche sie nicht in Screenshots oder
+    Beispieldaten.
+-   Die Beispiele in dieser README sind Dokumentationsbeispiele und
+    keine vollständigen Prüf- oder Freigabeprotokolle.
+
+## Projektinformationen
+
+  Eigenschaft            Wert
+  ---------------------- -------------------------
+  App-Name               Prüfung
+  Projektname            `md_pruefung`
+  Entwicklungsumgebung   MIT App Inventor
+  Screens                `Screen1` bis `Screen4`
+  Version                `2026.11.18.02`
+  Versioncode            `155`
+  Android-Minimum        API 24
